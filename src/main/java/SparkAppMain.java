@@ -1,7 +1,6 @@
 import org.apache.log4j.BasicConfigurator;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,6 +8,7 @@ import org.json.simple.JSONObject;
 import static spark.Spark.*;
 
 public class SparkAppMain {
+
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
@@ -72,21 +72,40 @@ public class SparkAppMain {
         }
 
 
-        //
-       // get("/hello", (req, res) -> "nice job !");
         get("/search/:value", (request, response) -> {
-            //return "Hello: " + request.params(":value");
+
             String value = request.params(":value");
             String foundBooks ="";
             int index=1;
             for (int i = 0; i < booksList.length(); i++)
                 if (booksList.getJSONObject(i).get("topic").equals(value)) {
 
-                    foundBooks += "<pre>Book "+index + " - "+ booksList.getJSONObject(i).get("title")+".     ID: "+booksList.getJSONObject(i).get("id")+ ".</pre>";
+                    foundBooks += "<pre>Book "+index + " - Title: "+ booksList.getJSONObject(i).get("title")+".     ID: "+booksList.getJSONObject(i).get("id")+ ".</pre>";
                     index++;
                 }
 
             return foundBooks;
+
+        });
+
+
+        get("/lookup/:value", (request, response) -> {
+
+            String value = request.params(":value");
+            String foundBook ="";
+
+            for (int i = 0; i < booksList.length(); i++)
+                if (booksList.getJSONObject(i).get("id").equals(value))
+                {
+
+                   // JSONObject detail =(JSONObject) booksList.getJSONObject(i).get("details");
+                    foundBook += "<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
+                            ".      details : "+booksList.getJSONObject(i).get("details")+ ".</pre>";
+
+                }
+
+            return foundBook;
+
         });
 
 
@@ -95,4 +114,13 @@ public class SparkAppMain {
 
 
     }
+
+    private static JSONObject getDetails(org.json.JSONObject book) {
+        JSONObject detals = new JSONObject();
+        detals =(JSONObject) book.get("details");
+        return detals;
+    }
+
+
+
 }
