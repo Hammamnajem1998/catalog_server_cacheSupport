@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.print.DocFlavor;
+
 import static spark.Spark.*;
 
 public class SparkAppMain {
@@ -30,7 +32,7 @@ public class SparkAppMain {
         book2.put("topic", "distributed systems");
         book2.put("title", "How to get a good grade in DOS in 20 minutes a day");
         book2.put("id", "2000");
-        book2.put("details" , book1Detailes);
+        book2.put("details" , book2Detailes);
 
 
 
@@ -41,7 +43,7 @@ public class SparkAppMain {
         book3.put("topic", "graduate school");
         book3.put("title", "Xen and the Art of Surviving Graduate School");
         book3.put("id", "3000");
-        book3.put("details" , book1Detailes);
+        book3.put("details" , book3Detailes);
 
 
 
@@ -52,7 +54,7 @@ public class SparkAppMain {
         book4.put("topic", "graduate school");
         book4.put("title", "Cooking for the Impatient Graduate Student");
         book4.put("id", "4000");
-        book4.put("details" , book1Detailes);
+        book4.put("details" , book4Detailes);
 
 
         JSONArray booksList = new JSONArray();
@@ -73,7 +75,7 @@ public class SparkAppMain {
 
 
         get("/search/:value", (request, response) -> {
-
+          //  port(8080);
             String value = request.params(":value");
             String foundBooks ="";
             int index=1;
@@ -90,7 +92,7 @@ public class SparkAppMain {
 
 
         get("/lookup/:value", (request, response) -> {
-
+            //port(81);
             String value = request.params(":value");
             String foundBook ="";
 
@@ -99,12 +101,31 @@ public class SparkAppMain {
                 {
 
                    // JSONObject detail =(JSONObject) booksList.getJSONObject(i).get("details");
-                    foundBook += "<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
+                    foundBook += request.port()+"<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
                             ".      details : "+booksList.getJSONObject(i).get("details")+ ".</pre>";
 
                 }
 
             return foundBook;
+
+        });
+
+        get("/buy/:value", (request, response) -> {
+           // port(8080);
+            String value = request.params(":value");
+
+            for (int i = 0; i < booksList.length(); i++)
+                if (booksList.getJSONObject(i).get("id").equals(value))
+                {
+                    int newNumber =  Integer.parseInt(booksList.getJSONObject(i).getJSONObject("details").get("number").toString())  ;
+                    newNumber--;
+                    booksList.getJSONObject(i).getJSONObject("details").put("number", newNumber);
+                    return "sold successfully  <br> number of remaining books are "+booksList.getJSONObject(i).getJSONObject("details").get("number");
+
+                }
+            return "book not found !!";
+
+
 
         });
 
