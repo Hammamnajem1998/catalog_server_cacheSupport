@@ -1,11 +1,8 @@
 import org.apache.log4j.BasicConfigurator;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
-
-import javax.print.DocFlavor;
 
 import static spark.Spark.*;
 
@@ -75,7 +72,7 @@ public class SparkAppMain {
 
 
         get("/search/:value", (request, response) -> {
-          //  port(8080);
+
             String value = request.params(":value");
             String foundBooks ="";
             int index=1;
@@ -92,7 +89,7 @@ public class SparkAppMain {
 
 
         get("/lookup/:value", (request, response) -> {
-            //port(81);
+
             String value = request.params(":value");
             String foundBook ="";
 
@@ -103,45 +100,26 @@ public class SparkAppMain {
                    // JSONObject detail =(JSONObject) booksList.getJSONObject(i).get("details");
                     foundBook += request.port()+"<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
                             ".      details : "+booksList.getJSONObject(i).get("details")+ ".</pre>";
-
                 }
-
             return foundBook;
-
         });
-
         get("/buy/:value", (request, response) -> {
-           // port(8080);
             String value = request.params(":value");
 
             for (int i = 0; i < booksList.length(); i++)
                 if (booksList.getJSONObject(i).get("id").equals(value))
                 {
                     int newNumber =  Integer.parseInt(booksList.getJSONObject(i).getJSONObject("details").get("number").toString())  ;
+                    if (newNumber==0)
+                    {
+                        return "all books are sold !!";
+                    }
                     newNumber--;
                     booksList.getJSONObject(i).getJSONObject("details").put("number", newNumber);
                     return "sold successfully  <br> number of remaining books are "+booksList.getJSONObject(i).getJSONObject("details").get("number");
 
                 }
             return "book not found !!";
-
-
-
         });
-
-
-
-
-
-
     }
-
-    private static JSONObject getDetails(org.json.JSONObject book) {
-        JSONObject detals = new JSONObject();
-        detals =(JSONObject) book.get("details");
-        return detals;
-    }
-
-
-
 }
