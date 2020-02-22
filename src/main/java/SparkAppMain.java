@@ -98,7 +98,7 @@ public class SparkAppMain {
                 {
 
                    // JSONObject detail =(JSONObject) booksList.getJSONObject(i).get("details");
-                    foundBook += request.port()+"<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
+                    foundBook += "<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
                             ".      details : "+booksList.getJSONObject(i).get("details")+ ".</pre>";
                 }
             return foundBook;
