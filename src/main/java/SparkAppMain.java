@@ -112,14 +112,23 @@ public class SparkAppMain {
                     int newNumber =  Integer.parseInt(booksList.getJSONObject(i).getJSONObject("details").get("number").toString())  ;
                     if (newNumber==0)
                     {
-                        return "all books are sold !!";
+                        return "Failed ,The quantity is over !!";
                     }
                     newNumber--;
                     booksList.getJSONObject(i).getJSONObject("details").put("number", newNumber);
-                    return "sold successfully  <br> number of remaining books are "+booksList.getJSONObject(i).getJSONObject("details").get("number");
+
+                    try (FileWriter file = new FileWriter("books.json")) {
+
+                        file.write(booksList.toString());
+                        file.flush();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return "success!!";
 
                 }
-            return "book not found !!";
+            return "Failed ,book not found !!";
         });
     }
 }
