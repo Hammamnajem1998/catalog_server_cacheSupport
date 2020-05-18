@@ -1,8 +1,16 @@
 import org.apache.log4j.BasicConfigurator;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
+
 import org.json.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static spark.Spark.*;
 
@@ -54,6 +62,37 @@ public class SparkAppMain {
         book4.put("details" , book4Detailes);
 
 
+        JSONObject book5Detailes = new JSONObject();
+        book4Detailes.put("cost", "50");
+        book4Detailes.put("number", "5");
+        JSONObject book5 = new JSONObject();
+        book4.put("topic", "distributed systems");
+        book4.put("title", "How to finish project 3 on time");
+        book4.put("id", "5000");
+        book4.put("details" , book5Detailes);
+
+
+
+        JSONObject book6Detailes = new JSONObject();
+        book4Detailes.put("cost", "60");
+        book4Detailes.put("number", "6");
+        JSONObject book6 = new JSONObject();
+        book4.put("topic", "distributed systems");
+        book4.put("title", "Whu theory classes are so hard");
+        book4.put("id", "6000");
+        book4.put("details" , book6Detailes);
+
+
+
+        JSONObject book7Detailes = new JSONObject();
+        book4Detailes.put("cost", "70");
+        book4Detailes.put("number", "7");
+        JSONObject book7 = new JSONObject();
+        book4.put("topic", "distributed systems");
+        book4.put("title", "Sprint on the pioneer valley");
+        book4.put("id", "7000");
+        book4.put("details" , book7Detailes);
+
         JSONArray booksList = new JSONArray();
         booksList.put(book1);
         booksList.put(book2);
@@ -75,14 +114,15 @@ public class SparkAppMain {
 
             String value = request.params(":value");
             String foundBooks ="";
-            int index=1;
+            //int index=1;
+            JSONArray temp =new JSONArray();
+            JSONObject temp1= new JSONObject();
             for (int i = 0; i < booksList.length(); i++)
                 if (booksList.getJSONObject(i).get("topic").equals(value)) {
-
-                    foundBooks += "<pre>Book "+index + " - Title: "+ booksList.getJSONObject(i).get("title")+".     ID: "+booksList.getJSONObject(i).get("id")+ ".</pre>";
-                    index++;
+                    temp.put(booksList.getJSONObject(i));
                 }
-
+            temp1.put("contains",temp);
+            foundBooks=temp1.toString();
             return foundBooks;
 
         });
@@ -97,9 +137,9 @@ public class SparkAppMain {
                 if (booksList.getJSONObject(i).get("id").equals(value))
                 {
 
-                   // JSONObject detail =(JSONObject) booksList.getJSONObject(i).get("details");
-                    foundBook += "<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
-                            ".      details : "+booksList.getJSONObject(i).get("details")+ ".</pre>";
+                   foundBook+=booksList.get(i).toString();
+                   // foundBook += "<pre> topic : " + booksList.getJSONObject(i).get("topic")+".     Title: "+booksList.getJSONObject(i).get("title")+
+                   //         ".      details : "+booksList.getJSONObject(i).get("details")+ ".</pre>";
                 }
             return foundBook;
         });
@@ -110,6 +150,7 @@ public class SparkAppMain {
                 if (booksList.getJSONObject(i).get("id").equals(value))
                 {
                     int newNumber =  Integer.parseInt(booksList.getJSONObject(i).getJSONObject("details").get("number").toString())  ;
+                    String id = booksList.getJSONObject(i).get("id").toString();
                     if (newNumber==0)
                     {
                         return "Failed ,The quantity is over !!";
@@ -125,6 +166,24 @@ public class SparkAppMain {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
+
+                    try {
+
+                        URL url = new URL("http://192.168.7.101:4567/invalidate/"+id.replaceAll(" ","%20"));
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("GET");
+                        if (conn.getResponseCode() != 200) {
+                            throw new RuntimeException("Failed : HTTP error code : "
+                                    + conn.getResponseCode());
+                        }
+                        conn.disconnect();
+
+                    } catch (IOException e) {
+
+                        e.printStackTrace();
+                    }
+
                     return "success!!";
 
                 }
